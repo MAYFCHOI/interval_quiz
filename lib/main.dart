@@ -396,43 +396,51 @@ class _QuizPageState extends State<QuizPage> with TickerProviderStateMixin {
                   // 보기 / 입력
                   if (!widget.subjective)
                     Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 2.6,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: _choices.map((c) {
-                          final isAnswer = c == _answer;
-                          final isSelected = c == _selected;
-                          Color bg = AppColors.card;
-                          Color border = Colors.white.withValues(alpha: 0.06);
-                          Color textColor = AppColors.textPrimary;
-                          if (_selected != null) {
-                            if (isAnswer) {
-                              bg = AppColors.correct.withValues(alpha: 0.15);
-                              border = AppColors.correct;
-                              textColor = AppColors.correct;
-                            } else if (isSelected) {
-                              bg = AppColors.wrong.withValues(alpha: 0.15);
-                              border = AppColors.wrong;
-                              textColor = AppColors.wrong;
-                            }
-                          }
-                          return GestureDetector(
-                            onTap: () => _onSelect(c),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: bg,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: border, width: 1.5),
-                              ),
-                              child: Text(c, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: textColor)),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final cols = constraints.maxWidth > 500 ? 3 : 2;
+                          const spacing = 10.0;
+                          final itemW = (constraints.maxWidth - spacing * (cols - 1)) / cols;
+                          return SingleChildScrollView(
+                            child: Wrap(
+                              spacing: spacing,
+                              runSpacing: spacing,
+                              children: _choices.map((c) {
+                                final isAnswer = c == _answer;
+                                final isSelected = c == _selected;
+                                Color bg = AppColors.card;
+                                Color border = Colors.white.withValues(alpha: 0.06);
+                                Color textColor = AppColors.textPrimary;
+                                if (_selected != null) {
+                                  if (isAnswer) {
+                                    bg = AppColors.correct.withValues(alpha: 0.15);
+                                    border = AppColors.correct;
+                                    textColor = AppColors.correct;
+                                  } else if (isSelected) {
+                                    bg = AppColors.wrong.withValues(alpha: 0.15);
+                                    border = AppColors.wrong;
+                                    textColor = AppColors.wrong;
+                                  }
+                                }
+                                return GestureDetector(
+                                  onTap: () => _onSelect(c),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    width: itemW,
+                                    height: 48,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: bg,
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: Border.all(color: border, width: 1.5),
+                                    ),
+                                    child: Text(c, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: textColor)),
+                                  ),
+                                );
+                              }).toList(),
                             ),
                           );
-                        }).toList(),
+                        },
                       ),
                     )
                   else
